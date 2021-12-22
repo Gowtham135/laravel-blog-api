@@ -49,7 +49,7 @@ class AuthorController extends Controller {
             'password'=>'required'
         ]);
         if($validators->fails()){
-            return Response::json(['errors'=>$validators->getMessageBag()->toArray()]);
+            return Response::json(['errors'=>$validators->getMessageBag()->toArray()], 422);
         }else{
             $author=new User();
             $author->name=$request->name;
@@ -68,7 +68,7 @@ class AuthorController extends Controller {
             'password'=>'required'
         ]);
         if($validators->fails()){
-            return Response::json(['errors'=>$validators->getMessageBag()->toArray()]);
+            return Response::json(['errors'=>$validators->getMessageBag()->toArray()], 422);
         }else{
             if(Auth::attempt(['email'=>$request->email,'password'=>$request->password])){
                 $author=$request->user();
@@ -76,7 +76,7 @@ class AuthorController extends Controller {
                 $author->save();
                 return Response::json(['loggedin'=>true,'success'=>'Login was successfully !','author'=>Auth::user()]);
             }else{
-                return Response::json(['loggedin'=>false,'errors'=>'Login failed ! Wrong credentials.']);
+                return Response::json(['loggedin'=>false,'errors'=>'Login failed ! Wrong credentials.'], 500);
             }
         }
     }
