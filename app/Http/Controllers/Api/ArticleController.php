@@ -52,7 +52,7 @@ class ArticleController extends Controller {
             'body'=>'required'
         ]);
         if($validators->fails()){
-            return Response::json(['errors'=>$validators->getMessageBag()->toArray()]);
+            return Response::json(['errors'=>$validators->getMessageBag()->toArray()], 422);
         }else{
             $article=new Article();
             $article->title=$request->title;
@@ -72,11 +72,11 @@ class ArticleController extends Controller {
     }
 
     // show a specific article by id
-    public function show($id){        
+    public function show($id){
         if(Article::where('id',$id)->first()){
             return new ArticleResource(Article::findOrFail($id));
         }else{
-            return Response::json(['error'=>'Article not found!']);
+            return Response::json(['error'=>'Article not found!'], 404);
         }
     }
 
@@ -88,7 +88,7 @@ class ArticleController extends Controller {
             'body'=>'required'
         ]);
         if($validators->fails()){
-            return Response::json(['errors'=>$validators->getMessageBag()->toArray()]);
+            return Response::json(['errors'=>$validators->getMessageBag()->toArray()], 422);
         }else{
             $article=Article::where('id',$request->id)->where('author_id',Auth::user()->id)->first();
             if($article){
@@ -106,8 +106,8 @@ class ArticleController extends Controller {
                 $article->save();
                 return Response::json(['success'=>'Article updated successfully !']);
             }else{
-                return Response::json(['error'=>'Article not found !']);
-            }            
+                return Response::json(['error'=>'Article not found !'], 404);
+            }
         }
     }
 
@@ -119,21 +119,21 @@ class ArticleController extends Controller {
                 $article->delete();
                 return Response::json(['success'=>'Article removed successfully !']);
             }else{
-                return Response::json(['error'=>'Article not found!']);
+                return Response::json(['error'=>'Article not found!'], 404);
             }
         }catch(\Illuminate\Database\QueryException $exception){
-            return Response::json(['error'=>'Article belongs to comment.So you cann\'t delete this article!']);
-        }        
+            return Response::json(['error'=>'Article belongs to comment.So you cann\'t delete this article!'], 400);
+        }
     }
 
     // search article by keyword
     public function searchArticle(Request $request){
         $articles=Article::where('title','LIKE','%'.$request->keyword.'%')->get();
         if(count($articles)==0){
-            return Response::json(['message'=>'No article match found !']);
+            return Response::json(['message'=>'No article match found !'], 404);
         }else{
             return Response::json($articles);
-        }        
+        }
     }
 
     // fetch comments for a specific article
@@ -141,7 +141,7 @@ class ArticleController extends Controller {
         if(Article::where('id',$id)->first()){
             return CommentResource::collection(Comment::where('article_id',$id)->get());
         }else{
-            return Response::json(['error'=>'Article not found!']);
+            return Response::json(['error'=>'Article not found!'], 404);
         }
     }
 }
