@@ -19,11 +19,11 @@ class ArticleController extends Controller {
     public function index(Request $request){
 
         $article = Article::where('author_id',Auth::user()->id);
-        if($request->filled('search'){
+        if($request->filled('search')){
             $article->where('title','LIKE','%'.$request->search.'%');
         }
 
-        if($request->filled('category'){
+        if($request->filled('category')){
              $article->where('category_id', $request->category);
         }
 
