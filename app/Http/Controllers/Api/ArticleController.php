@@ -20,7 +20,7 @@ class ArticleController extends Controller {
 
         $article = Article::where('author_id',Auth::user()->id);
         if($request->filled('search')){
-            $article->where('title','LIKE','%'.$request->search.'%');
+            $article->where('title','ilike','%'.$request->search.'%');
         }
 
         if($request->filled('category')){
