@@ -16,8 +16,18 @@ use Illuminate\Support\Str;
 
 class ArticleController extends Controller {
     // show all the article
-    public function index(){
-        return ArticleResource::collection(Article::where('author_id',Auth::user()->id)->orderBy('id','DESC')->paginate(10));
+    public function index(Request $request){
+
+        $article = Article::where('author_id',Auth::user()->id);
+        if($request->filled('search'){
+            $article->where('title','LIKE','%'.$request->search.'%');
+        }
+
+        if($request->filled('category'){
+             $article->where('category_id', $request->category);
+        }
+
+        return ArticleResource::collection($article->orderBy('id','DESC')->paginate(10));
     }
 
     // check title validation
